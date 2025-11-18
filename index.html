@@ -46,6 +46,57 @@
             padding: 24px 24px;
             /* Relleno alrededor del contenido */
         }
+
+        footer {
+
+            /* Estilos generales para botones en el footer */
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            /* Cinco columnas iguales */
+            justify-content: center;
+            align-content: center;
+            gap: 5px;
+            /* separación */
+            ;
+            border: 0;
+            cursor: pointer;
+
+            & button {
+                width: 32px;
+                height: 32px;
+                border-radius: 50%;
+                background: url(tinder_icons.png) no-repeat;
+                /* Carga la imagen de sprites */
+                background-size: 175%;
+                /* Ajusta el tamaño de la imagen de fondo */
+                background-position: 0 0;
+                /* Posición por defecto (ej. botón Zap) */
+            }
+
+            &.is-big {
+                width: 48px;
+                height: 48px;
+                background-size: 190%;
+            }
+
+            /* Efecto Hover */
+            &:hover {
+                transform: scale(1.3);
+                transition: transform 0.3s ease;
+            }
+
+            /* Ejemplo de Posicionamiento del Fondo (Sprites) */
+            .is-undo {
+                background-position: -140px 0;
+                /* Desplaza la imagen en el eje X */
+            }
+
+            .is-star {
+                background-position: -70px 0;
+                /* Desplaza la imagen para encontrar la estrella */
+            }
+
+        }
     </style> /* Aplica sombra respetando la transparencia del PNG */
 </head>
 
