@@ -111,6 +111,47 @@
                 border-radius: 8px;
                 z-index: 100;
                 cursor: grab;
+
+                /* Tarjeta se va a la izquierda (Swipe NOPE) */
+                & .go-left {
+                    transform: translate(-100vw) rotate(-14deg);
+                    transition: transform 0.3s ease;
+
+                }
+
+                /* Tarjeta se va a la derecha (Swipe LIKE) */
+                & .go-right {
+                    transform: translate(100vw) rotate(14deg);
+                    transition: transform 0.3s ease;
+
+                }
+
+                /* Tarjeta vuelve al centro (Reset) */
+                & .reset {
+                    transform: translate(0);
+                    transition: transform 0.3s ease;
+
+                }
+
+                /* Estilos de las etiquetas LIKE/NOPE */
+                & .Choice {
+                    opacity: 0;
+                    /* Inicialmente invisibles */
+                    position: absolute;
+
+                    /* (Otros estilos de fuente, padding y sombra) */
+                    & .Choice.nope {
+                        /* Estilos de color rojo y posición izquierda (con rotación negativa) */
+
+                    }
+
+                    & .Choice.like {
+                        /* Estilos de color verde y posición derecha (con rotación positiva) */
+
+                    }
+                }
+
+
             }
 
             & h2 {
