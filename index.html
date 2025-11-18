@@ -97,6 +97,41 @@
             }
 
         }
+
+        .cards {
+            /* Aplicado a .Cards (contenedor de artículos) */
+            position: relative;
+
+            & article {
+                /* Aplicado a las Tarjetas (article) */
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                overflow: hidden;
+                border-radius: 8px;
+                z-index: 100;
+                cursor: grab;
+            }
+
+            & h2 {
+                /* Contenedor de Texto (para nombre y edad) */
+                position: absolute;
+                inset: 0;
+                /* Ocupa todo el espacio */
+                /* Degradado para que el texto sea visible */
+                background: linear-gradient(to top, #000000dd 20%, transparent 40%);
+                display: flex;
+                align-items: flex-end;
+                /* Alinea el contenido abajo */
+            }
+
+            & span {
+                /* Estilos del texto (e.g., nombre y edad) */
+                margin-left: 4px;
+                font-size: 18px;
+            }
+
+        }
     </style> /* Aplica sombra respetando la transparencia del PNG */
 </head>
 
