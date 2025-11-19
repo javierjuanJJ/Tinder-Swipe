@@ -180,7 +180,127 @@
 
 </body>
 <script>
+    let isAnimating = false; // Flag para saber si la tarjeta se está animando o moviendo [36]
+    let pullDeltaX = 0; // Distancia recorrida por el ratón o dedo [37]
+    const decisionThreshold = 80; // Distancia mínima requerida para considerar una decisión de swipe [38]
+    let startX; // Posición X inicial del clic/toque [39]
+    let actualCard; // La tarjeta actual que se está arrastrando [40]
 
+    function startDrag(event) {
+        if (isAnimating) return; // Evita el arrastre si ya hay una animación [40]
+
+        // Recupera la tarjeta más cercana al evento
+        actualCard = event.target.closest('article');
+        if (!actualCard) return; // Fix: Sale si no encuentra una tarjeta [41]
+
+        // Obtener la posición inicial (startX)
+        if (event.type === 'mousedown') {
+            startX = event.pageX;
+        } else if (event.type === 'touchstart') {
+            // Soporte para multitouch, usa el primer toque [42]
+            startX = event.touches.pageX;
+        }
+
+        // Escuchar movimientos y finalización (solo mientras se arrastra) [43]
+        document.addEventListener('mousemove', onMove, { passive: true }); // Passive true para mejor rendimiento en eventos de toque/movimiento [44]
+        document.addEventListener('mouseup', onEnd);
+        document.addEventListener('touchmove', onMove, { passive: true });
+        document.addEventListener('touchend', onEnd);
+    }
+
+
+    document.addEventListener('mousedown', startDrag);
+    document.addEventListener('touchstart', startDrag, { passive: true });
+
+    function onMove(event) {
+        // 1. Obtener la posición X actual
+        let currentX;
+        if (event.type === 'mousemove') {
+            currentX = event.pageX;
+        } else if (event.type === 'touchmove') {
+            currentX = event.touches.pageX;
+        }
+
+        // 2. Calcular la distancia recorrida (Delta X)
+        pullDeltaX = currentX - startX;
+
+        if (pullDeltaX === 0) return;
+
+        isAnimating = true; // Indica que estamos moviendo la tarjeta [50]
+
+        // 3. Calcular la rotación (usando 14 como divisor mágico)
+        const rotate = pullDeltaX / 14;
+
+        // 4. Aplicar transformación (Translate y Rotate) inline
+        actualCard.style.transform = `translate(${pullDeltaX}px) rotate(${rotate}deg)`;
+        actualCard.style.cursor = 'grabbing';
+
+        // 5. Actualizar la opacidad de LIKE/NOPE
+        // La opacidad se normaliza usando la distancia absoluta respecto al threshold
+        const absDistance = Math.abs(pullDeltaX);
+        const opacity = absDistance / decisionThreshold;
+
+        // Determinar si se mueve a la derecha (positivo) o izquierda (negativo) [33]
+        if (pullDeltaX > 0) {
+            // Cambia la opacidad del LIKE
+            actualCard.querySelector('.like').style.opacity = opacity;
+        } else {
+            // Cambia la opacidad del NOPE
+            actualCard.querySelector('.nope').style.opacity = opacity;
+        }
+    }
+
+
+    function onEnd(event) {
+        // 1. Limpiar los listeners de movimiento y fin [54]
+        document.removeEventListener('mousemove', onMove);
+        document.removeEventListener('mouseup', onEnd);
+        document.removeEventListener('touchmove', onMove);
+        document.removeEventListener('touchend', onEnd);
+
+        // 2. Determinar si se tomó una decisión [55]
+        const decisionMade = Math.abs(pullDeltaX) >= decisionThreshold;
+
+        if (decisionMade) {
+            // La tarjeta se va
+            const goRight = pullDeltaX > 0;
+            const classToAdd = goRight ? 'go-right' : 'go-left';
+
+            // 3. Añadir clase de animación de salida [57]
+            actualCard.classList.add(classToAdd);
+
+            // 4. Escuchar el final de la transición de salida [58]
+            actualCard.addEventListener('transitionend', () => {
+                // Eliminar la tarjeta del DOM una vez que termina la animación [59]
+                actualCard.remove();
+            }, { once: true }); // Usar once: true para que se ejecute una sola vez [58]
+
+        } else {
+            // La tarjeta vuelve al centro (reset)
+            actualCard.classList.add('reset');
+            actualCard.classList.remove('go-right', 'go-left');
+        }
+
+        // 5. Cleanup de estilos y flags después de la transición (se aplica también al reset) [61, 62]
+        actualCard.addEventListener('transitionend', () => {
+            // Eliminar estilos inline que se añadieron durante onMove [61]
+            actualCard.style.removeProperty('transform');
+            actualCard.style.removeProperty('cursor');
+
+            // Resetear banderas
+            pullDeltaX = 0;
+            isAnimating = false;
+
+            // Quitar la clase reset (si aplica)
+            actualCard.classList.remove('reset');
+
+            // Resetear la opacidad de las opciones (LIKE/NOPE) [63]
+            actualCard.querySelectorAll('.Choice').forEach(choice => {
+                choice.style.opacity = 0;
+            });
+
+        }, { once: true });
+    }
 </script>
 
 </html>
